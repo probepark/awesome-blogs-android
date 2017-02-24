@@ -34,7 +34,7 @@ public class AwesomeBlogsLocalSource implements DataSource {
                 Realm realm = Realm.getInstance(config);
                 try {
                     Feed feed = realm.where(Feed.class).equalTo("category", category).findFirst();
-                    return feed != null ? Observable.just(realm.copyFromRealm(feed)) : Observable.<Feed>empty();
+                    return feed != null ? feed.<Feed>asObservable() : Observable.<Feed>empty();
                 } finally {
                     realm.close();
                 }

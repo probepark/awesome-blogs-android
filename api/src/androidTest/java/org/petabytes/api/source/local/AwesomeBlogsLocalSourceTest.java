@@ -23,24 +23,24 @@ public class AwesomeBlogsLocalSourceTest {
 
     @Test
     public void getFeed() throws Exception {
-        {
-            Realm.getInstance(localSource.config)
-                .executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.deleteAll();
-                    }
-                });
-            List<Feed> values = localSource.getFeed("dev")
-                .test()
-                .awaitTerminalEvent()
-                .assertCompleted()
-                .getOnNextEvents();
-
-            assertThat(values)
-                .hasSize(1)
-                .containsNull();
-        }
+//        {
+//            Realm.getInstance(localSource.config)
+//                .executeTransaction(new Realm.Transaction() {
+//                    @Override
+//                    public void execute(Realm realm) {
+//                        realm.deleteAll();
+//                    }
+//                });
+//            List<Feed> values = localSource.getFeed("dev")
+//                .test()
+//                .awaitTerminalEvent()
+//                .assertCompleted()
+//                .getOnNextEvents();
+//
+//            assertThat(values)
+//                .hasSize(1)
+//                .containsNull();
+//        }
 
         {
             Feed feed = new Feed();
