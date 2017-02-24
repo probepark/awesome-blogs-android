@@ -8,7 +8,11 @@ import org.petabytes.api.source.local.AwesomeBlogsLocalSource;
 import org.petabytes.api.source.local.Feed;
 import org.petabytes.api.source.remote.AwesomeBlogsRemoteSource;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import rx.Observable;
+import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.schedulers.Schedulers;
@@ -17,6 +21,8 @@ public class Api implements DataSource {
 
     private final AwesomeBlogsLocalSource localSource;
     private final AwesomeBlogsRemoteSource remoteSource;
+
+    private Map<String, Subscription> remoteSubscriptions = new HashMap<>();
 
     @VisibleForTesting
     Api(AwesomeBlogsLocalSource localSource, AwesomeBlogsRemoteSource remoteSource) {
@@ -40,10 +46,14 @@ public class Api implements DataSource {
             .doOnNext(new Action1<Feed>() {
                 @Override
                 public void call(Feed data) {
-                    remoteSource.getFeed(category)
-                        .onErrorResumeNext(Observable.<Feed>empty())
-                        .subscribeOn(Schedulers.io())
-                        .subscribe();
+                    Subscription previous = remoteSubscriptions.get(category);
+                    if (previous == null || previous.isUnsubscribed()) {
+                        Subscription remoteSubscription = remoteSource.getFeed(category)
+                            .onErrorResumeNext(Observable.<Feed>empty())
+                            .subscribeOn(Schedulers.io())
+                            .subscribe();
+                        remoteSubscriptions.put(category, remoteSubscription);
+                    }
                 }
             })
             .switchIfEmpty(Observable.defer(new Func0<Observable<Feed>>() {
