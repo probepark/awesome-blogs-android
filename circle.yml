@@ -8,11 +8,11 @@ dependencies:
 
 test:
   override:
-    - ./gradlew connectedAndroidTest
     - emulator -avd circleci-android21 -no-audio -no-window:
         background: true
         parallel: true
     - circle-android wait-for-boot
+    - ./gradlew connectedAndroidTest
 
 deployment:
   coverage:
