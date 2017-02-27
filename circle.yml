@@ -7,18 +7,12 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter "android-25","build-tools-25.0.2","extra-android-m2repository"
 
 test:
-  pre:
-    # start emulator for instrumentation tests
+  override:
+    - ./gradlew connectedAndroidTest
     - emulator -avd circleci-android21 -no-audio -no-window:
         background: true
-
+        parallel: true
     - circle-android wait-for-boot
-    - sleep 60
-    - adb shell input keyevent 82
-    - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-
-  override:
-   - ./gradlew connectedCheck
 
 deployment:
   coverage:
